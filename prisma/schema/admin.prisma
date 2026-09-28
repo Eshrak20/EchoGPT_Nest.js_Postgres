@@ -1,0 +1,17 @@
+model ApiRequestLog {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String?  @db.Uuid
+  method       String
+  path         String
+  statusCode   Int
+  responseTime Int
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([statusCode])
+  @@index([createdAt])
+  @@index([path])
+  @@map("api_request_logs")
+}

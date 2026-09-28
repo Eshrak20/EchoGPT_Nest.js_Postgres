@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EchoGPT Backend API - Multi-provider AI chat REST API built with NestJS, PostgreSQL and Prisma.">
+  <title>EchoGPT · AI backend for developers</title>
+  <!-- Tailwind via CDN (lightweight, no build) + Inter font -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    /* subtle custom scrollbar for code blocks */
+    pre::-webkit-scrollbar { height: 6px; background: #1e293b; border-radius: 8px; }
+    pre::-webkit-scrollbar-thumb { background: #475569; border-radius: 8px; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 antialiased selection:bg-cyan-400/30 selection:text-cyan-200">
+
+  <!-- ============================= -->
+  <!-- NAVBAR (glassmorphism upgrade) -->
+  <!-- ============================= -->
+  <header class="sticky top-0 z-50 border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition group-hover:scale-105">
+          E
+        </div>
+        <div>
+          <p class="font-bold tracking-tight text-lg">EchoGPT</p>
+          <p class="text-xs text-slate-500 -mt-0.5">Backend API</p>
+        </div>
+      </a>
+
+      <nav class="hidden items-center gap-8 text-sm font-medium text-slate-400 md:flex">
+        <a href="#features" class="transition hover:text-cyan-300">Features</a>
+        <a href="#api" class="transition hover:text-cyan-300">API</a>
+        <a href="#architecture" class="transition hover:text-cyan-300">Architecture</a>
+        <a href="#security" class="transition hover:text-cyan-300">Security</a>
+        <a href="/api/docs" class="rounded-xl bg-white/5 px-4 py-2 text-white ring-1 ring-inset ring-white/10 transition hover:bg-white/10 hover:ring-cyan-400/40">
+          Swagger
+        </a>
+      </nav>
+
+      <!-- mobile menu placeholder (clean) -->
+      <button class="block rounded-lg p-2 text-slate-400 hover:bg-slate-800 md:hidden" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============================= -->
+    <!-- HERO (refined, spacious, glow) -->
+    <!-- ============================= -->
+    <section class="relative overflow-hidden">
+      <!-- layered background glow -->
+      <div class="pointer-events-none absolute inset-0 overflow-hidden">
+        <div class="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[120px]"></div>
+        <div class="absolute bottom-0 right-0 h-96 w-96 translate-x-1/3 rounded-full bg-blue-600/10 blur-[100px]"></div>
+      </div>
+
+      <div class="relative mx-auto max-w-7xl px-6 py-28 lg:py-36">
+        <div class="max-w-4xl">
+          <!-- version badge (glassy) -->
+          <div class="mb-8 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-4 py-1.5 text-sm font-medium text-cyan-200 backdrop-blur-sm">
+            <span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px] shadow-emerald-400"></span>
+            EchoGPT Backend · v1.0.0
+          </div>
+
+          <h1 class="text-6xl font-extrabold leading-[1.1] tracking-tight sm:text-7xl lg:text-8xl">
+            AI infrastructure
+            <span class="block bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+              built for developers.
+            </span>
+          </h1>
+
+          <p class="mt-8 max-w-2xl text-lg leading-relaxed text-slate-400 sm:text-xl">
+            EchoGPT is a REST API backend for building multi-provider AI chat applications
+            with authentication, subscriptions, conversations, search and administration.
+          </p>
+
+          <div class="mt-10 flex flex-wrap gap-4">
+            <a href="/api/docs" class="group inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-7 py-3.5 font-semibold text-slate-950 shadow-lg shadow-cyan-400/25 transition-all hover:bg-cyan-300 hover:shadow-cyan-300/30">
+              Explore Swagger
+              <span class="transition-transform group-hover:translate-x-0.5">→</span>
+            </a>
+            <a href="#features" class="rounded-xl border border-slate-700 bg-slate-900/80 px-7 py-3.5 font-semibold text-slate-200 backdrop-blur-sm transition-all hover:border-slate-500 hover:bg-slate-800">
+              View Features
+            </a>
+          </div>
+
+          <!-- tiny stats / trust line (optional) -->
+          <div class="mt-14 flex flex-wrap gap-x-8 gap-y-3 text-sm text-slate-500">
+            <span class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-cyan-400"></span> JWT & refresh tokens</span>
+            <span class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-cyan-400"></span> Encrypted provider keys</span>
+            <span class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-cyan-400"></span> OpenAPI 3.0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- TECH STACK (elevated cards) -->
+    <!-- ============================= -->
+    <section class="border-y border-slate-800/80 bg-slate-900/30">
+      <div class="mx-auto max-w-7xl px-6 py-10">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <!-- card 1 -->
+          <div class="rounded-xl border border-slate-800/80 bg-slate-950/60 p-5 backdrop-blur-sm transition hover:border-slate-600">
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Framework</p>
+            <p class="mt-2 text-lg font-semibold text-white">NestJS</p>
+          </div>
+          <div class="rounded-xl border border-slate-800/80 bg-slate-950/60 p-5 backdrop-blur-sm transition hover:border-slate-600">
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Database</p>
+            <p class="mt-2 text-lg font-semibold text-white">PostgreSQL</p>
+          </div>
+          <div class="rounded-xl border border-slate-800/80 bg-slate-950/60 p-5 backdrop-blur-sm transition hover:border-slate-600">
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">ORM</p>
+            <p class="mt-2 text-lg font-semibold text-white">Prisma</p>
+          </div>
+          <div class="rounded-xl border border-slate-800/80 bg-slate-950/60 p-5 backdrop-blur-sm transition hover:border-slate-600">
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Runtime</p>
+            <p class="mt-2 text-lg font-semibold text-white">Bun</p>
+          </div>
+          <div class="rounded-xl border border-slate-800/80 bg-slate-950/60 p-5 backdrop-blur-sm transition hover:border-slate-600">
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Documentation</p>
+            <p class="mt-2 text-lg font-semibold text-white">Swagger / OpenAPI</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- FEATURES (refined grid, better hover) -->
+    <!-- ============================= -->
+    <section id="features" class="scroll-mt-20">
+      <div class="mx-auto max-w-7xl px-6 py-24">
+        <div class="max-w-3xl">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">Core capabilities</p>
+          <h2 class="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
+            Everything required for an AI backend.
+          </h2>
+          <p class="mt-5 text-lg leading-relaxed text-slate-400">
+            The V1 API is organized into independent modules covering authentication, AI providers,
+            conversations, search, subscriptions and administration.
+          </p>
+        </div>
+
+        <!-- 9 feature cards, with glass effect and subtle motion -->
+        <div class="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <!-- Authentication -->
+          <article class="group relative rounded-2xl border border-slate-800/80 bg-slate-900/40 p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/70 hover:shadow-2xl hover:shadow-cyan-500/5">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 text-xl text-cyan-400 ring-1 ring-inset ring-cyan-400/20">
+              🔐
+            </div>
+            <h3 class="mt-6 text-xl font-semibold text-white">Authentication</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">
+              Registration, login, JWT access tokens, refresh tokens, logout, password hashing and email verification.
+            </p>
+          </article>
+
+          <!-- Users -->
+          <article class="group relative rounded-2xl border border-slate-800/80 bg-slate-900/40 p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/70 hover:shadow-2xl hover:shadow-cyan-500/5">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 text-xl text-cyan-400 ring-1 ring-inset ring-cyan-400/20">
+              👤
+            </div>
+            <h3 class="mt-6 text-xl font-semibold text-white">User Management</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">
+              User profiles, password management, account status and role-based access control.
+            </p>
+          </article>
+
+          <!-- Providers -->
+          <article class="group relative rounded-2xl border border-slate-800/80 bg-slate-900/40 p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/70 hover:shadow-2xl hover:shadow-cyan-500/5">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 text-xl text-cyan-400 ring-1 ring-inset ring-cyan-400/20">
+              🤖
+            </div>
+            <h3 class="mt-6 text-xl font-semibold text-white">AI Providers</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">
+              Manage OpenAI, Anthropic and Google AI providers with model management and encrypted API credentials.
+            </p>
+          </article>
+
+          <!-- Chat -->
+          <article class="group relative rounded-2xl border border-slate-800/80 bg-slate-900/40 p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/70 hover:shadow-2xl hover:shadow-cyan-500/5">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 text-xl text-cyan-400 ring-1 ring-inset ring-cyan-400/20">
+              💬
+            </div>
+            <h3 class="mt-6 text-xl font-semibold text-white">AI Chat</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">
+              Send prompts to different AI providers, receive responses and maintain conversation history.
+            </p>
+          </article>
+
+          <!-- Subscriptions -->
+          <article class="group relative rounded-2xl border border-slate-800/80 bg-slate-900/40 p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/70 hover:shadow-2xl hover:shadow-cyan-500/5">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 text-xl text-cyan-400 ring-1 ring-inset ring-cyan-400/20">
+              ⚡
+            </div>
+            <h3 class="mt-6 text-xl font-semibold text-white">Subscriptions</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">
+              Free and premium plans with usage limits, plan upgrades, downgrades and monthly request tracking.
+            </p>
+          </article>
+
+          <!-- Search -->
+          <article class="group relative rounded-2xl border border-slate-800/80 bg-slate-900/40 p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/70 hover:shadow-2xl hover:shadow-cyan-500/5">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 text-xl text-cyan-400 ring-1 ring-inset ring-cyan-400/20">
+              🔎
+            </div>
+            <h3 class="mt-6 text-xl font-semibold text-white">AI Search</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">
+              Search integration with search history, recent searches, suggestions and caching.
+            </p>
+          </article>
+
+          <!-- Admin -->
+          <article class="group relative rounded-2xl border border-slate-800/80 bg-slate-900/40 p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/70 hover:shadow-2xl hover:shadow-cyan-500/5">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 text-xl text-cyan-400 ring-1 ring-inset ring-cyan-400/20">
+              🛡️
+            </div>
+            <h3 class="mt-6 text-xl font-semibold text-white">Administration</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">
+              Dashboard data, users, subscriptions, providers, usage statistics, request logs and system health.
+            </p>
+          </article>
+
+          <!-- Logging -->
+          <article class="group relative rounded-2xl border border-slate-800/80 bg-slate-900/40 p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/70 hover:shadow-2xl hover:shadow-cyan-500/5">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 text-xl text-cyan-400 ring-1 ring-inset ring-cyan-400/20">
+              📊
+            </div>
+            <h3 class="mt-6 text-xl font-semibold text-white">Request Logging</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">
+              Track API requests, response status, response time and request metadata for administration and debugging.
+            </p>
+          </article>
+
+          <!-- Swagger -->
+          <article class="group relative rounded-2xl border border-slate-800/80 bg-slate-900/40 p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/70 hover:shadow-2xl hover:shadow-cyan-500/5">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 text-xl text-cyan-400 ring-1 ring-inset ring-cyan-400/20">
+              📚
+            </div>
+            <h3 class="mt-6 text-xl font-semibold text-white">Swagger Documentation</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">
+              Interactive OpenAPI documentation for exploring endpoints, authentication, request bodies and responses.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- ARCHITECTURE (clean two-col) -->
+    <!-- ============================= -->
+    <section id="architecture" class="scroll-mt-20 border-y border-slate-800/80 bg-slate-900/30">
+      <div class="mx-auto max-w-7xl px-6 py-24">
+        <div class="grid gap-16 lg:grid-cols-2 lg:items-center">
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">Architecture</p>
+            <h2 class="mt-4 text-4xl font-bold tracking-tight">Modular by design.</h2>
+            <p class="mt-5 text-lg leading-relaxed text-slate-400">
+              EchoGPT follows a modular NestJS architecture. Each major business capability is isolated
+              into its own module, making the backend easier to maintain, test and extend.
+            </p>
+          </div>
+
+          <!-- code panel (refined) -->
+          <div class="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-6 shadow-xl shadow-black/20 backdrop-blur-sm">
+            <div class="mb-4 flex items-center gap-2">
+              <span class="h-3 w-3 rounded-full bg-red-500/80"></span>
+              <span class="h-3 w-3 rounded-full bg-yellow-500/80"></span>
+              <span class="h-3 w-3 rounded-full bg-green-500/80"></span>
+              <span class="ml-3 text-xs text-slate-500">src/</span>
+            </div>
+            <div class="font-mono text-sm leading-8 text-slate-300">
+              <p class="text-slate-500">src/</p>
+              <p class="pl-4">├── auth/</p>
+              <p class="pl-4">├── users/</p>
+              <p class="pl-4">├── subscriptions/</p>
+              <p class="pl-4">├── providers/</p>
+              <p class="pl-4">├── chat/</p>
+              <p class="pl-4">├── search/</p>
+              <p class="pl-4">├── admin/</p>
+              <p class="pl-4">├── prisma/</p>
+              <p class="pl-4">└── main.ts</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- API ENDPOINTS (modern table) -->
+    <!-- ============================= -->
+    <section id="api" class="scroll-mt-20">
+      <div class="mx-auto max-w-7xl px-6 py-24">
+        <div class="max-w-3xl">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">REST API</p>
+          <h2 class="mt-4 text-4xl font-bold tracking-tight">API modules</h2>
+          <p class="mt-5 text-lg leading-relaxed text-slate-400">
+            All application endpoints are available under the
+            <code class="rounded-md bg-slate-800 px-2 py-1 text-sm text-cyan-400 ring-1 ring-inset ring-cyan-400/20">/api</code> prefix.
+          </p>
+        </div>
+
+        <!-- endpoint grid: modern, hover effect -->
+        <div class="mt-12 overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/20 backdrop-blur-sm">
+          <div class="grid grid-cols-2 border-b border-slate-800/80 bg-slate-900/60 px-6 py-4 text-sm font-semibold text-slate-300">
+            <span>Module</span>
+            <span>Base Endpoint</span>
+          </div>
+
+          <div class="divide-y divide-slate-800/60">
+            <div class="grid grid-cols-2 px-6 py-5 transition hover:bg-slate-800/20">
+              <span class="text-slate-200">Authentication</span>
+              <code class="text-cyan-400">/api/auth</code>
+            </div>
+            <div class="grid grid-cols-2 px-6 py-5 transition hover:bg-slate-800/20">
+              <span class="text-slate-200">Users</span>
+              <code class="text-cyan-400">/api/users</code>
+            </div>
+            <div class="grid grid-cols-2 px-6 py-5 transition hover:bg-slate-800/20">
+              <span class="text-slate-200">Subscriptions</span>
+              <code class="text-cyan-400">/api/subscriptions</code>
+            </div>
+            <div class="grid grid-cols-2 px-6 py-5 transition hover:bg-slate-800/20">
+              <span class="text-slate-200">AI Providers</span>
+              <code class="text-cyan-400">/api/providers</code>
+            </div>
+            <div class="grid grid-cols-2 px-6 py-5 transition hover:bg-slate-800/20">
+              <span class="text-slate-200">Chat</span>
+              <code class="text-cyan-400">/api/chat</code>
+            </div>
+            <div class="grid grid-cols-2 px-6 py-5 transition hover:bg-slate-800/20">
+              <span class="text-slate-200">Search</span>
+              <code class="text-cyan-400">/api/search</code>
+            </div>
+            <div class="grid grid-cols-2 px-6 py-5 transition hover:bg-slate-800/20">
+              <span class="text-slate-200">Administration</span>
+              <code class="text-cyan-400">/api/admin</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- SECURITY (cards) -->
+    <!-- ============================= -->
+    <section id="security" class="scroll-mt-20 border-y border-slate-800/80 bg-slate-900/30">
+      <div class="mx-auto max-w-7xl px-6 py-24">
+        <div class="max-w-3xl">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">Security</p>
+          <h2 class="mt-4 text-4xl font-bold tracking-tight">Built with security in mind.</h2>
+        </div>
+
+        <div class="mt-12 grid gap-5 md:grid-cols-2">
+          <div class="rounded-2xl border border-slate-800/80 bg-slate-950/60 p-7 backdrop-blur-sm transition hover:border-slate-600">
+            <h3 class="text-xl font-semibold text-white">JWT Authentication</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">Access tokens and refresh tokens are used to secure authenticated API resources.</p>
+          </div>
+          <div class="rounded-2xl border border-slate-800/80 bg-slate-950/60 p-7 backdrop-blur-sm transition hover:border-slate-600">
+            <h3 class="text-xl font-semibold text-white">Password Hashing</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">User passwords are securely hashed instead of being stored as plain text.</p>
+          </div>
+          <div class="rounded-2xl border border-slate-800/80 bg-slate-950/60 p-7 backdrop-blur-sm transition hover:border-slate-600">
+            <h3 class="text-xl font-semibold text-white">Encrypted Provider Keys</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">AI provider API credentials are encrypted before being stored in the database.</p>
+          </div>
+          <div class="rounded-2xl border border-slate-800/80 bg-slate-950/60 p-7 backdrop-blur-sm transition hover:border-slate-600">
+            <h3 class="text-xl font-semibold text-white">Role-Based Access</h3>
+            <p class="mt-3 leading-relaxed text-slate-400">Administrative endpoints are protected using role-based authorization.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- QUICK START (dark card, polished) -->
+    <!-- ============================= -->
+    <section>
+      <div class="mx-auto max-w-7xl px-6 py-24">
+        <div class="rounded-3xl border border-slate-800/80 bg-slate-900/60 p-8 shadow-2xl shadow-black/30 backdrop-blur-sm sm:p-12">
+          <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+            <div>
+              <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">Quick start</p>
+              <h2 class="mt-4 text-4xl font-bold">Run EchoGPT locally.</h2>
+              <p class="mt-5 leading-relaxed text-slate-400">
+                Install dependencies, configure your environment variables and start the development server.
+              </p>
+            </div>
+
+            <div class="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950 shadow-inner">
+              <div class="flex items-center gap-2 border-b border-slate-800/80 bg-slate-900/60 px-5 py-3">
+                <span class="h-3 w-3 rounded-full bg-red-500/80"></span>
+                <span class="h-3 w-3 rounded-full bg-yellow-500/80"></span>
+                <span class="h-3 w-3 rounded-full bg-green-500/80"></span>
+                <span class="ml-3 text-xs text-slate-500">Terminal</span>
+              </div>
+              <pre class="overflow-x-auto p-6 font-mono text-sm leading-7 text-slate-200"><code>git clone  https://github.com/Eshrak20/EchoGPT_Nest.js_Postgres.git
+
+cd EchoGPT_Nest.js_Postgres
+
+bun install
+
+bunx prisma migrate dev
+
+bun run start:dev</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- CTA (swagger) -->
+    <!-- ============================= -->
+    <section class="pb-24">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="relative overflow-hidden rounded-3xl border border-cyan-400/20 bg-gradient-to-b from-cyan-500/10 to-transparent p-10 text-center backdrop-blur-sm sm:p-16">
+          <div class="pointer-events-none absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-cyan-400/20 blur-[100px]"></div>
+          <div class="relative">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">API Documentation</p>
+            <h2 class="mt-4 text-4xl font-bold tracking-tight">Explore the complete API.</h2>
+            <p class="mx-auto mt-5 max-w-2xl leading-relaxed text-slate-400">
+              Test endpoints, inspect request schemas, authenticate with JWT and explore API responses directly from Swagger.
+            </p>
+            <a href="/api/docs" class="mt-8 inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-7 py-3.5 font-semibold text-slate-950 shadow-lg shadow-cyan-400/30 transition-all hover:bg-cyan-300 hover:shadow-cyan-300/40">
+              Open Swagger Documentation
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================= -->
+  <!-- FOOTER (clean) -->
+  <!-- ============================= -->
+  <footer class="border-t border-slate-800/80">
+    <div class="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-10 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="font-semibold text-slate-200">EchoGPT Backend</p>
+        <p class="mt-1 text-slate-500">REST API · Version 1.0.0</p>
+      </div>
+      <div class="text-left sm:text-right">
+        <p class="text-slate-400">NestJS · PostgreSQL · Prisma · Bun</p>
+        <p class="mt-1 text-slate-500">Built for EchoGPT V1</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

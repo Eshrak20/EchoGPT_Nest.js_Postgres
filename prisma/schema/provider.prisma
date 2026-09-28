@@ -1,0 +1,42 @@
+enum ProviderType {
+  OPENAI
+  ANTHROPIC
+  GOOGLE
+  DEEPSEEK
+  OTHER
+}
+
+model Provider {
+  id         String          @id @default(uuid()) @db.Uuid
+  name       String
+  type       ProviderType
+  apiKey     String?
+  isActive   Boolean         @default(true)
+  isDefault  Boolean         @default(false)
+  apiBaseUrl String?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  models     ProviderModel[]
+
+  @@index([isDefault])
+  @@map("providers")
+}
+
+model ProviderModel {
+  id          String   @id @default(uuid()) @db.Uuid
+  providerId  String   @db.Uuid
+  provider    Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  name        String
+  modelId     String
+  isActive    Boolean  @default(true)
+
+  messages    Message[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([providerId, modelId])
+  @@index([providerId])
+  @@map("provider_models")
+}

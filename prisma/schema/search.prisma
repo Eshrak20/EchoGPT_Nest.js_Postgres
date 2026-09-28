@@ -1,0 +1,25 @@
+model SearchHistory {
+    id        String   @id @default(uuid()) @db.Uuid
+    userId    String   @db.Uuid
+    query     String
+    createdAt DateTime @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([userId, createdAt])
+    @@map("search_history")
+}
+
+model SearchCache {
+    id        String   @id @default(uuid()) @db.Uuid
+    cacheKey  String   @unique
+    query     String   @unique
+    results   Json
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([expiresAt])
+    @@map("search_cache")
+}
