@@ -25,6 +25,7 @@ const __dirname = dirname(__filename);
 
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
+      exclude: ['/api/docs{*splat}'],
     }),
 
     PrismaModule,
@@ -37,4 +38,4 @@ const __dirname = dirname(__filename);
     AdminModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
