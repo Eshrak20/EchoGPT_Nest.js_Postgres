@@ -1,9 +1,8 @@
 import {
   ConflictException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
@@ -168,110 +167,7 @@ export class UsersService {
     };
   }
 
-  // Admin: list users with pagination
-  async getAllUsers(page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
 
-    const [users, total] = await this.prisma.$transaction([
-      this.prisma.user.findMany({
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: { role: true },
-      }),
-      this.prisma.user.count(),
-    ]);
-
-    return {
-      data: users.map((user) => this.sanitizeUser(user)),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
-  }
-
-  // Admin: get a user by ID
-  async getUserById(id: string) {
-    const user = await this.getUserOrThrow(id);
-
-    return {
-      user: this.sanitizeUser(user),
-    };
-  }
-
-  // Admin: update a user's role
-  async updateUserRole(
-    targetUserId: string,
-    roleName: UserRole,
-    adminId: string,
-  ) {
-    if (targetUserId === adminId) {
-      throw new ForbiddenException(
-        'You cannot change your own role',
-      );
-    }
-
-    const targetUser = await this.getUserOrThrow(targetUserId);
-
-    const role = await this.prisma.role.upsert({
-      where: { name: roleName },
-      update: {},
-      create: { name: roleName },
-    });
-
-    const updatedUser = await this.prisma.user.update({
-      where: { id: targetUser.id },
-      data: { roleId: role.id },
-      include: { role: true },
-    });
-
-    return {
-      message: 'User role updated successfully',
-      user: this.sanitizeUser(updatedUser),
-    };
-  }
-
-  // Admin: activate or deactivate a user
-  async updateUserStatus(
-    targetUserId: string,
-    isActive: boolean,
-    adminId: string,
-  ) {
-    if (targetUserId === adminId && !isActive) {
-      throw new ForbiddenException(
-        'You cannot deactivate your own account',
-      );
-    }
-
-    await this.getUserOrThrow(targetUserId);
-
-    const updatedUser = await this.prisma.user.update({
-      where: { id: targetUserId },
-      data: { isActive },
-      include: { role: true },
-    });
-
-    // Revoke sessions when account is deactivated
-    if (!isActive) {
-      await this.prisma.session.updateMany({
-        where: {
-          userId: targetUserId,
-          revokedAt: null,
-        },
-        data: { revokedAt: new Date() },
-      });
-    }
-
-    return {
-      message: isActive
-        ? 'User account activated successfully'
-        : 'User account deactivated successfully',
-      user: this.sanitizeUser(updatedUser),
-    };
-  }
 
   // Shared helper
   async getUserOrThrow(id: string) {

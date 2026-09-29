@@ -1,13 +1,20 @@
 import {
+    Body,
     Controller,
     Get,
+    Param,
+    ParseIntPipe,
+    ParseUUIDPipe,
+    Patch,
     Query,
+    Req,
     UseGuards,
 } from '@nestjs/common';
 
 import {
     ApiBearerAuth,
     ApiOperation,
+    ApiQuery,
     ApiResponse,
     ApiTags
 } from '@nestjs/swagger';
@@ -28,6 +35,9 @@ import {
     AdminService,
 } from './admin.service.js';
 
+import { UpdateRoleDto } from '../users/dto/update-role.dto.js';
+import { UpdateUserStatusDto } from '../users/dto/update-user-status.dto.js';
+import type { AuthenticatedRequest } from '../users/users.controller.js';
 import {
     AdminQueryDto,
 } from './dto/admin-query.dto.js';
@@ -40,16 +50,77 @@ import {
 )
 @Roles('ADMIN')
 @Controller('admin')
+
+
 export class AdminController {
     constructor(
         private readonly adminService:
             AdminService,
-    ) {}
+    ) { }
 
-    /*
-     * Dashboard
-     */
 
+    // GET /api/users?page=1&limit=10
+    @Get('users')
+    @ApiOperation({ summary: 'Admin: list all users' })
+    @ApiQuery({ name: 'page', required: false, example: 1 })
+    @ApiQuery({ name: 'limit', required: false, example: 20 })
+    getAllUsers(
+        @Query('page', new ParseIntPipe({ optional: true }))
+        page = 1,
+        @Query('limit', new ParseIntPipe({ optional: true }))
+        limit = 20,
+    ) {
+        const safePage = Math.max(1, page);
+        const safeLimit = Math.min(100, Math.max(1, limit));
+
+        return this.adminService.getAllUsers(
+            safePage,
+            safeLimit,
+        );
+    }
+
+    // GET /api/users/:id
+    @Get('users/:id')
+    @ApiOperation({ summary: 'Admin: get user by ID' })
+    getUserById(
+        @Param('id', ParseUUIDPipe) id: string,
+    ) {
+        return this.adminService.getUserById(id);
+    }
+
+    // PATCH /api/users/:id/role
+    @Patch('users/:id/role')
+    @ApiOperation({ summary: 'Admin: update user role' })
+    updateUserRole(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Body() dto: UpdateRoleDto,
+        @Req() req: AuthenticatedRequest,
+    ) {
+        return this.adminService.updateUserRole(
+            id,
+            dto.role,
+            req.user.id,
+        );
+    }
+
+    // PATCH /api/users/:id/status
+    @Patch('users/:id/status')
+    @ApiOperation({ summary: 'Admin: activate or deactivate user' })
+    updateUserStatus(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Body() dto: UpdateUserStatusDto,
+        @Req() req: AuthenticatedRequest,
+    ) {
+        return this.adminService.updateUserStatus(
+            id,
+            dto.isActive,
+            req.user.id,
+        );
+    }
+
+        /*
+         * Dashboard
+         */
     @Get('dashboard')
     @ApiOperation({
         summary:
